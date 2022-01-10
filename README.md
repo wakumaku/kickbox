@@ -46,8 +46,8 @@ With Options:
 
     resp, _ := client.VerifyBatch(
         context.TODO(),
-		emailsFile,
-	)
+        emailsFile,
+    )
 ```
 
 With options:
@@ -62,10 +62,10 @@ With options:
 
     resp, err := c.VerifyBatch(
         context.TODO(),
-		emailsFile,
+        emailsFile,
         kickbox.Filename("my_results.csv"),
-		kickbox.Callback("http://notify.result.here"),
-	)
+        kickbox.Callback("http://notify.result.here"),
+    )
 ```
 
 ### Batch Status Check:
