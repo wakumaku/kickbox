@@ -4,9 +4,11 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 	"wakumaku/kickbox"
 
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/time/rate"
 )
 
 func TestClientOptions(t *testing.T) {
@@ -27,15 +29,19 @@ func TestClientOptions(t *testing.T) {
 		{
 			optFnc:     kickbox.MaxConcurrentConnections(0),
 			returnsErr: true,
-			expected:   "max concurrent connections must be between 1 and 25",
-		},
-		{
-			optFnc:     kickbox.MaxConcurrentConnections(26),
-			returnsErr: true,
-			expected:   "max concurrent connections must be between 1 and 25",
+			expected:   "max concurrent connection must be greater than zero",
 		},
 		{
 			optFnc:     kickbox.MaxConcurrentConnections(5),
+			returnsErr: false,
+		},
+		{
+			optFnc:     kickbox.CustomRateLimiter(nil),
+			returnsErr: true,
+			expected:   "rate limiter is nil",
+		},
+		{
+			optFnc:     kickbox.CustomRateLimiter(rate.NewLimiter(rate.Every(time.Second), 1)),
 			returnsErr: false,
 		},
 		{

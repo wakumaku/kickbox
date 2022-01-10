@@ -26,6 +26,7 @@ type ClientHTTPOptions struct {
 	baseURL                  string
 	maxConcurrentConnections uint
 	httpClient               *http.Client
+	rateLimiter              *rate.Limiter
 }
 
 // ClientHTTPOption signature
@@ -46,10 +47,22 @@ func OverrideBaseURL(baseURL string) ClientHTTPOption {
 // see: https://docs.kickbox.com/docs/using-the-api#api-limits
 func MaxConcurrentConnections(num uint) ClientHTTPOption {
 	return func(o *ClientHTTPOptions) error {
-		if num > maxConcurrentConnections || num <= 0 {
-			return fmt.Errorf("max concurrent connections must be between 1 and %d", maxConcurrentConnections)
+		if num <= 0 {
+			return fmt.Errorf("max concurrent connection must be greater than zero")
 		}
 		o.maxConcurrentConnections = num
+		return nil
+	}
+}
+
+// CustomRateLimiter sets a custom rate limiter
+// see: https://docs.kickbox.com/docs/using-the-api#api-limits
+func CustomRateLimiter(r *rate.Limiter) ClientHTTPOption {
+	return func(o *ClientHTTPOptions) error {
+		if r == nil {
+			return errors.New("rate limiter is nil")
+		}
+		o.rateLimiter = r
 		return nil
 	}
 }
@@ -76,6 +89,7 @@ func New(apiKey string, opts ...ClientHTTPOption) (*ClientHTTP, error) {
 		baseURL:                  BaseURL,
 		maxConcurrentConnections: maxConcurrentConnections,
 		httpClient:               &http.Client{Timeout: 30 * time.Second},
+		rateLimiter:              rate.NewLimiter(rate.Every(maxRatePerMinute), 1),
 	}
 
 	for _, o := range opts {
@@ -89,6 +103,6 @@ func New(apiKey string, opts ...ClientHTTPOption) (*ClientHTTP, error) {
 		httpClient: options.httpClient,
 		baseURL:    options.baseURL,
 		connPool:   make(chan struct{}, options.maxConcurrentConnections),
-		rateLimit:  rate.NewLimiter(rate.Every(maxRatePerMinute), 1),
+		rateLimit:  options.rateLimiter,
 	}, nil
 }
