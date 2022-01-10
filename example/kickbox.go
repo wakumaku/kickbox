@@ -7,7 +7,8 @@ import (
 	"log"
 	"os"
 	"strings"
-	"wakumaku/kickbox"
+
+	"github.com/wakumaku/kickbox"
 )
 
 const apiKey = "test_my_apikey"

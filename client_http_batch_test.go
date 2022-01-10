@@ -9,7 +9,8 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
-	"wakumaku/kickbox"
+
+	"github.com/wakumaku/kickbox"
 
 	"github.com/stretchr/testify/assert"
 )

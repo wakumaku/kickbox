@@ -8,7 +8,8 @@ import (
 	"sync"
 	"testing"
 	"time"
-	"wakumaku/kickbox"
+
+	"github.com/wakumaku/kickbox"
 
 	"github.com/stretchr/testify/assert"
 )
