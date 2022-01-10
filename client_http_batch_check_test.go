@@ -6,7 +6,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"wakumaku/kickbox"
+
+	"github.com/wakumaku/kickbox"
 
 	"github.com/stretchr/testify/assert"
 )

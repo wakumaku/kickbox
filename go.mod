@@ -1,4 +1,4 @@
-module wakumaku/kickbox
+module github.com/wakumaku/kickbox
 
 go 1.17
 

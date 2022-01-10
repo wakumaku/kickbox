@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"testing"
 	"time"
-	"wakumaku/kickbox"
+
+	"github.com/wakumaku/kickbox"
 
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/time/rate"
