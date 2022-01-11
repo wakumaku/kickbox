@@ -2,23 +2,30 @@
 
 https://docs.kickbox.com/docs/using-the-api
 
+```shell
+$ go get github.com/wakumaku/kickbox
+```
+✅ Single verification
+
+✅ Batch verification
+
+✅ Batch status check
+
+
 ## API Client
 
-Wil make real http requests against kickbox services. You can use a `test_apikey` to enable the sandbox mode.
+Will make real http requests against kickbox services. You can use a `test_apikey` to enable the sandbox mode.
 
-### Simple single verification:
+### Create a new Client
+
+With defaults:
 
 ```golang
     client, err := kickbox.New("apikey")
-    if err != nil {
-        return
-    }
-
-    stats, response, err := client.Verify(context.TODO(), "example@email.com")
+    ...
 ```
 
-With Options:
-
+With options:
 
 ```golang
     client, err := kickbox.New("apikey",
@@ -27,11 +34,18 @@ With Options:
         kickbox.CustomRateLimiter(rate.NewLimiter(rate.Every(50 / time.Second), 1)), // Default: 8000 per minute
         kickbox.CustomHTTPClient(&http.Client{}),
     )
+    ...
+```
+### Single verification:
+
+```golang
+    client, err := kickbox.New("apikey")
     if err != nil {
-        return 
+        return
     }
 
     stats, response, err := client.Verify(context.TODO(), "example@email.com")
+    ...
 ```
 
 ### Batch Verification:
