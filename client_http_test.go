@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/wakumaku/kickbox"
 
@@ -42,7 +41,7 @@ func TestClientOptions(t *testing.T) {
 			expected:   "rate limiter is nil",
 		},
 		{
-			optFnc:     kickbox.CustomRateLimiter(rate.NewLimiter(rate.Every(time.Second), 1)),
+			optFnc:     kickbox.CustomRateLimiter(rate.NewLimiter(rate.Limit(1), 1)),
 			returnsErr: false,
 		},
 		{

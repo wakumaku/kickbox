@@ -31,7 +31,7 @@ With options:
     client, err := kickbox.New("apikey",
         kickbox.OverrideBaseURL("http://mock.server.com"),
         kickbox.MaxConcurrentConnections(100), // Default: is 25
-        kickbox.CustomRateLimiter(rate.NewLimiter(rate.Every(50 / time.Second), 1)), // Default: 8000 per minute
+        kickbox.CustomRateLimiter(rate.NewLimiter(rate.Limit(50), 1)), // Default: 8000 per minute
         kickbox.CustomHTTPClient(&http.Client{}),
     )
     ...

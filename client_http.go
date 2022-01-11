@@ -89,7 +89,7 @@ func New(apiKey string, opts ...ClientHTTPOption) (*ClientHTTP, error) {
 		baseURL:                  BaseURL,
 		maxConcurrentConnections: maxConcurrentConnections,
 		httpClient:               &http.Client{Timeout: 30 * time.Second},
-		rateLimiter:              rate.NewLimiter(rate.Every(maxRatePerMinute), 1),
+		rateLimiter:              rate.NewLimiter(rate.Limit(maxRatePerMinute), 1),
 	}
 
 	for _, o := range opts {

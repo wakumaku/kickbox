@@ -3,7 +3,6 @@ package kickbox
 import (
 	"context"
 	"io"
-	"time"
 )
 
 const (
@@ -18,7 +17,7 @@ const (
 
 	// see: https://docs.kickbox.com/docs/using-the-api#api-limits
 	maxConcurrentConnections = 25
-	maxRatePerMinute         = 8000 / time.Minute
+	maxRatePerMinute         = 8000 / 60
 )
 
 // Verifier
