@@ -1,6 +1,6 @@
 # kickbox API client
 
-![test workflow](https://github.com/wakumaku/kickbox/actions/workflows/test/badge.svg)
+![test workflow](https://github.com/wakumaku/kickbox/actions/workflows/test.yml/badge.svg)
 
 https://docs.kickbox.com/docs/using-the-api
 
