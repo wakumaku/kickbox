@@ -43,6 +43,7 @@ func TestClientHTTPBatchCheck(t *testing.T) {
 				  "unprocessed": 2
 				},
 				"success": true,
+				"message": null
 			  }`,
 			expected: &kickbox.VerifyBatchCheckResponse{
 				ID:      123,
@@ -68,6 +69,7 @@ func TestClientHTTPBatchCheck(t *testing.T) {
 				"error": null,
 				"duration": 0,
 				"success": true,
+				"message": null
 			  }`,
 			expected: &kickbox.VerifyBatchCheckResponse{
 				ID:      123,
@@ -84,6 +86,7 @@ func TestClientHTTPBatchCheck(t *testing.T) {
 				"error": "Description of error here...",
 				"duration": 42,
 				"success": true,
+				"message": null
 			  }`,
 			expected: &kickbox.VerifyBatchCheckResponse{
 				ID:      123,
