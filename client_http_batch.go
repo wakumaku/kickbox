@@ -56,8 +56,9 @@ func (c *ClientHTTP) VerifyBatch(ctx context.Context, file io.ReadCloser, opts .
 	const verifyBatchPath = "/v2/verify-batch"
 
 	// Default options
+	const defaultRequestTimeout = 30 * time.Second
 	options := VerifyBatchRequestOptions{
-		timeout: 30 * time.Second,
+		timeout: defaultRequestTimeout,
 	}
 	for _, apply := range opts {
 		apply(&options)

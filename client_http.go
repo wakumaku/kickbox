@@ -32,7 +32,7 @@ type ClientHTTPOptions struct {
 // ClientHTTPOption signature
 type ClientHTTPOption func(*ClientHTTPOptions) error
 
-// OverrideBaseURL allows override the main endpoint to run tests agains mock servers
+// OverrideBaseURL allows override the main endpoint to run tests against mock servers
 func OverrideBaseURL(baseURL string) ClientHTTPOption {
 	return func(o *ClientHTTPOptions) error {
 		if baseURL == "" {
@@ -85,10 +85,11 @@ func New(apiKey string, opts ...ClientHTTPOption) (*ClientHTTP, error) {
 	}
 
 	// default option values
+	const defaultClientTimeout = 30 * time.Second
 	options := ClientHTTPOptions{
 		baseURL:                  BaseURL,
 		maxConcurrentConnections: maxConcurrentConnections,
-		httpClient:               &http.Client{Timeout: 30 * time.Second},
+		httpClient:               &http.Client{Timeout: defaultClientTimeout},
 		rateLimiter:              rate.NewLimiter(rate.Limit(maxRatePerMinute), 1),
 	}
 

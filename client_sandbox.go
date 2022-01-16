@@ -296,7 +296,7 @@ func (c *ClientSandbox) Verify(_ context.Context, email string, _ ...VerifyOptio
 	headers := ResponseVerifyHeaders{
 		Balance:      1,
 		ResponseTime: 1,
-		HttpStatus:   http.StatusOK,
+		HTTPStatus:   http.StatusOK,
 	}
 
 	return &headers, &resp, nil
@@ -304,13 +304,13 @@ func (c *ClientSandbox) Verify(_ context.Context, email string, _ ...VerifyOptio
 
 // VerifyBatch always returns the same response
 func (c *ClientSandbox) VerifyBatch(_ context.Context, _ io.ReadCloser, opts ...VerifyBatchOption) (*ResponseVerifyBatch, error) {
+	const ID = 123456
 	return &ResponseVerifyBatch{
-		ID:      123456,
+		ID:      ID,
 		Success: true,
 	}, nil
 }
 
 func (c *ClientSandbox) VerifyBatchCheck(_ context.Context, _ string) (*VerifyBatchCheckResponse, error) {
 	return nil, errors.New("not implemented")
-
 }

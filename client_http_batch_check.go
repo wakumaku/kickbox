@@ -41,8 +41,8 @@ type VerifyBatchCheckResponse struct {
 	// when Status is completed OR failed
 	Name      string `json:"name"`       // "Batch API Process - 05-12-2018-01-58-08",
 	CreatedAt string `json:"created_at"` // "2018-05-12T18:58:08.000Z",
-	Error     string `json:"error"`      //: null,
-	Duration  int    `json:"duration"`   //: 0,
+	Error     string `json:"error"`      // null,
+	Duration  int    `json:"duration"`   // 0,
 }
 
 // VerifyBatchCheck Checking a Batch Verification Status
@@ -54,7 +54,8 @@ func (c *ClientHTTP) VerifyBatchCheck(ctx context.Context, batchID string) (*Ver
 		return nil, errors.New("batch id is empty")
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	const timeoutDuration = 30 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeoutDuration)
 	defer cancel()
 
 	// Request building ...
@@ -82,5 +83,4 @@ func (c *ClientHTTP) VerifyBatchCheck(ctx context.Context, batchID string) (*Ver
 	}
 
 	return &body, nil
-
 }

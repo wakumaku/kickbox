@@ -1,4 +1,10 @@
 {
     "explorer.compactFolders": false,
-    "editor.minimap.enabled": false
+    "editor.minimap.enabled": false,
+
+    "go.lintTool":"golangci-lint",
+    "go.lintFlags": [
+        "--fast"
+    ]
+
 }

@@ -15,7 +15,6 @@ import (
 )
 
 func TestVerifyMaxTimeout(t *testing.T) {
-
 	client, err := kickbox.New("apikey")
 	if err != nil {
 		assert.NotNil(t, err, "unexpected error")
@@ -62,13 +61,15 @@ func TestVerifyRequestError(t *testing.T) {
 	defer cancel()
 	_, _, err = client.Verify(ctx, "email@example.com")
 	assert.NotNil(t, err)
-	assert.EqualError(t, err, "doing request: Get \"http://nonexistinghost.test.me/v2/verify?apikey=apikey&email=email%40example.com&timeout=6000\": dial tcp: lookup nonexistinghost.test.me: no such host")
+	assert.EqualError(t, err,
+		"doing request: Get \"http://nonexistinghost.test.me/v2/verify?apikey=apikey&email=email%40example.com&timeout=6000\": "+
+			"dial tcp: lookup nonexistinghost.test.me: no such host")
 }
 
 func TestVerifyRequestBodyBroken(t *testing.T) {
 	handler := func(rw http.ResponseWriter, r *http.Request) {
 		rw.WriteHeader(http.StatusOK)
-		rw.Write([]byte(`{broken json`))
+		_, _ = rw.Write([]byte(`{broken json`))
 	}
 
 	svr := httptest.NewServer(http.HandlerFunc(handler))
@@ -87,7 +88,6 @@ func TestVerifyRequestBodyBroken(t *testing.T) {
 }
 
 func TestVerifyMockResponse(t *testing.T) {
-
 	body := []byte(`{
 		"result":"undeliverable",
 		"reason":"rejected_email",
@@ -106,7 +106,7 @@ func TestVerifyMockResponse(t *testing.T) {
 
 	handler := func(rw http.ResponseWriter, r *http.Request) {
 		rw.WriteHeader(http.StatusOK)
-		rw.Write(body)
+		_, _ = rw.Write(body)
 	}
 
 	svr := httptest.NewServer(http.HandlerFunc(handler))
@@ -125,12 +125,11 @@ func TestVerifyMockResponse(t *testing.T) {
 }
 
 func TestVerifyMaxConcurrentConnections(t *testing.T) {
-
 	handler := func(rw http.ResponseWriter, r *http.Request) {
 		// delay the response
 		time.Sleep(3 * time.Second)
 		rw.WriteHeader(http.StatusOK)
-		rw.Write([]byte(`{}`))
+		_, _ = rw.Write([]byte(`{}`))
 	}
 
 	svr := httptest.NewServer(http.HandlerFunc(handler))

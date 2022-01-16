@@ -28,7 +28,6 @@ func TestClientHTTPBatchCheck(t *testing.T) {
 				ID:      123,
 				Status:  "starting",
 				Success: true,
-				Message: "",
 			},
 		},
 		"processing": {
@@ -44,13 +43,11 @@ func TestClientHTTPBatchCheck(t *testing.T) {
 				  "unprocessed": 2
 				},
 				"success": true,
-				"message": null
 			  }`,
 			expected: &kickbox.VerifyBatchCheckResponse{
 				ID:      123,
 				Status:  "processing",
 				Success: true,
-				Message: "",
 			},
 		},
 		"completed": {
@@ -71,13 +68,11 @@ func TestClientHTTPBatchCheck(t *testing.T) {
 				"error": null,
 				"duration": 0,
 				"success": true,
-				"message": null
 			  }`,
 			expected: &kickbox.VerifyBatchCheckResponse{
 				ID:      123,
 				Status:  "completed",
 				Success: true,
-				Message: "",
 			},
 		},
 		"failed": {
@@ -89,13 +84,11 @@ func TestClientHTTPBatchCheck(t *testing.T) {
 				"error": "Description of error here...",
 				"duration": 42,
 				"success": true,
-				"message": null
 			  }`,
 			expected: &kickbox.VerifyBatchCheckResponse{
 				ID:      123,
 				Status:  "failed",
 				Success: true,
-				Message: "",
 			},
 		},
 	}
@@ -108,7 +101,7 @@ func TestClientHTTPBatchCheck(t *testing.T) {
 			return
 		}
 		rw.WriteHeader(http.StatusOK)
-		rw.Write([]byte(test.input))
+		_, _ = rw.Write([]byte(test.input))
 	}
 
 	svr := httptest.NewServer(http.HandlerFunc(handler))
@@ -123,5 +116,4 @@ func TestClientHTTPBatchCheck(t *testing.T) {
 		assert.Equal(t, resp.ID, values.expected.ID)
 		assert.Equal(t, resp.Status, values.expected.Status)
 	}
-
 }

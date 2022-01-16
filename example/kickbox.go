@@ -37,7 +37,7 @@ func main() {
 
 	log.Printf("Balance: %d", stats.Balance)
 	log.Printf("Time: %d", stats.ResponseTime)
-	log.Printf("HTTP Status: %d", stats.HttpStatus)
+	log.Printf("HTTP Status: %d", stats.HTTPStatus)
 
 	response, err := json.MarshalIndent(resp, "    ", "    ")
 	if err != nil {

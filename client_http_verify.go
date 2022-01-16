@@ -12,19 +12,19 @@ import (
 // ResponseVerify kickbox structure on success response (200OK)
 // see: https://docs.kickbox.com/docs/single-verification-api#the-response
 type ResponseVerify struct {
-	Result     string  `json:"result"`       //:"undeliverable",
-	Reason     string  `json:"reason"`       //:"rejected_email",
-	Role       bool    `json:"role"`         //:false,
-	Free       bool    `json:"free"`         //:false,
-	Disposable bool    `json:"disposable"`   //:false,
-	AcceptAll  bool    `json:"accept_all"`   //:false,
-	DidYouMean string  `json:"did_you_mean"` //:"bill.lumbergh@gmail.com",
-	Sendex     float64 `json:"sendex"`       //:0.23,
-	Email      string  `json:"email"`        //:"bill.lumbergh@gamil.com",
-	User       string  `json:"user"`         //:"bill.lumbergh",
-	Domain     string  `json:"domain"`       //:"gamil.com",
-	Success    bool    `json:"success"`      //:true,
-	Message    string  `json:"message"`      //:null
+	Result     string  `json:"result"`       // "undeliverable",
+	Reason     string  `json:"reason"`       // "rejected_email",
+	Role       bool    `json:"role"`         // false,
+	Free       bool    `json:"free"`         // false,
+	Disposable bool    `json:"disposable"`   // false,
+	AcceptAll  bool    `json:"accept_all"`   // false,
+	DidYouMean string  `json:"did_you_mean"` // "bill.lumbergh@gmail.com",
+	Sendex     float64 `json:"sendex"`       // 0.23,
+	Email      string  `json:"email"`        // "bill.lumbergh@gamil.com",
+	User       string  `json:"user"`         // "bill.lumbergh",
+	Domain     string  `json:"domain"`       // "gamil.com",
+	Success    bool    `json:"success"`      // true,
+	Message    string  `json:"message"`      // null
 }
 
 // ResponseVerifyHeaders
@@ -32,7 +32,7 @@ type ResponseVerify struct {
 type ResponseVerifyHeaders struct {
 	Balance      int // Your remaining verification credit balance
 	ResponseTime int // The elapsed time (in milliseconds) it took Kickbox to process the request
-	HttpStatus   int // HTTP Status Response Code
+	HTTPStatus   int // HTTP Status Response Code
 }
 
 // VerifyRequestOptions holds the optional parameters for the Verify request
@@ -54,12 +54,13 @@ func Timeout(d time.Duration) VerifyOption {
 
 // Verify calls the verification endpoint
 // Optionaly a timeout can be specified
-func (a *ClientHTTP) Verify(ctx context.Context, email string, opts ...VerifyOption) (*ResponseVerifyHeaders, *ResponseVerify, error) {
+func (c *ClientHTTP) Verify(ctx context.Context, email string, opts ...VerifyOption) (*ResponseVerifyHeaders, *ResponseVerify, error) {
 	const verifyPath = "/v2/verify"
 
 	// Default options
+	const defaultRequestTimeout = 6000 * time.Millisecond
 	options := VerifyRequestOptions{
-		timeout: 6000 * time.Millisecond,
+		timeout: defaultRequestTimeout,
 	}
 	for _, opt := range opts {
 		opt(&options)
@@ -73,22 +74,22 @@ func (a *ClientHTTP) Verify(ctx context.Context, email string, opts ...VerifyOpt
 	defer cancel()
 
 	// RateLimiter will block until it is permitted or the context is canceled
-	if err := a.rateLimit.Wait(ctx); err != nil {
+	if err := c.rateLimit.Wait(ctx); err != nil {
 		return nil, nil, fmt.Errorf("rate limiting requests: %v", err)
 	}
 
 	// MaxConcurrentConnections control
 	select {
-	case a.connPool <- struct{}{}:
+	case c.connPool <- struct{}{}:
 	default:
 		return nil, nil, fmt.Errorf("max connections oppened: %d", maxConcurrentConnections)
 	}
 	defer func() {
-		<-a.connPool
+		<-c.connPool
 	}()
 
 	// Request building ...
-	requestURL := a.baseURL + verifyPath
+	requestURL := c.baseURL + verifyPath
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, nil)
 	if err != nil {
 		return nil, nil, fmt.Errorf("building request: %v", err)
@@ -97,11 +98,11 @@ func (a *ClientHTTP) Verify(ctx context.Context, email string, opts ...VerifyOpt
 	// Adds query params
 	q := req.URL.Query()
 	q.Add("email", email)
-	q.Add("apikey", a.apiKey)
+	q.Add("apikey", c.apiKey)
 	q.Add("timeout", fmt.Sprintf("%v", options.timeout.Milliseconds()))
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := a.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, nil, fmt.Errorf("doing request: %v", err)
 	}
@@ -114,7 +115,7 @@ func (a *ClientHTTP) Verify(ctx context.Context, email string, opts ...VerifyOpt
 	header := ResponseVerifyHeaders{
 		Balance:      balance,
 		ResponseTime: responseTime,
-		HttpStatus:   resp.StatusCode,
+		HTTPStatus:   resp.StatusCode,
 	}
 
 	// Parse the the body response

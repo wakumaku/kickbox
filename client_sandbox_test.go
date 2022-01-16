@@ -129,7 +129,6 @@ func TestSandboxResponses(t *testing.T) {
 	}
 
 	c := NewSandbox()
-
 	for _, ucase := range tests {
 		_, resp, err := c.Verify(context.TODO(), ucase.email)
 		assert.Nil(t, err, "unexpected error")

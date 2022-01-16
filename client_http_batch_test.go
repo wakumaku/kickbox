@@ -43,6 +43,7 @@ func TestVerifyBatch(t *testing.T) {
 			rw.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+
 		if r.Header.Get("X-Kickbox-Callback") != expectedCallbackHeader {
 			t.Log("unexpected callback header content")
 			rw.WriteHeader(http.StatusInternalServerError)
@@ -50,8 +51,8 @@ func TestVerifyBatch(t *testing.T) {
 		}
 
 		// Check body content
-		content, err := ioutil.ReadAll(r.Body)
-		if err != nil {
+		content, errRead := ioutil.ReadAll(r.Body)
+		if errRead != nil {
 			t.Logf("cannot read body content: %v", err)
 			rw.WriteHeader(http.StatusInternalServerError)
 			return
@@ -65,7 +66,7 @@ func TestVerifyBatch(t *testing.T) {
 		}
 
 		rw.WriteHeader(http.StatusOK)
-		rw.Write(expectedResponse)
+		_, _ = rw.Write(expectedResponse)
 	}
 
 	svr := httptest.NewServer(http.HandlerFunc(handler))
