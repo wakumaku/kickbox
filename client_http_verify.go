@@ -57,6 +57,21 @@ func Timeout(d time.Duration) VerifyOption {
 func (c *ClientHTTP) Verify(ctx context.Context, email string, opts ...VerifyOption) (*ResponseVerifyHeaders, *ResponseVerify, error) {
 	const verifyPath = "/v2/verify"
 
+	// RateLimiter will block until it is permitted or the context is canceled
+	if err := c.rateLimit.Wait(ctx); err != nil {
+		return nil, nil, fmt.Errorf("rate limiting requests: %v", err)
+	}
+
+	// MaxConcurrentConnections control
+	select {
+	case c.connPool <- struct{}{}:
+	default:
+		return nil, nil, fmt.Errorf("max connections oppened: %d", maxConcurrentConnections)
+	}
+	defer func() {
+		<-c.connPool
+	}()
+
 	// Default options
 	const defaultRequestTimeout = 6000 * time.Millisecond
 	options := VerifyRequestOptions{
@@ -72,21 +87,6 @@ func (c *ClientHTTP) Verify(ctx context.Context, email string, opts ...VerifyOpt
 
 	ctx, cancel := context.WithTimeout(ctx, options.timeout)
 	defer cancel()
-
-	// RateLimiter will block until it is permitted or the context is canceled
-	if err := c.rateLimit.Wait(ctx); err != nil {
-		return nil, nil, fmt.Errorf("rate limiting requests: %v", err)
-	}
-
-	// MaxConcurrentConnections control
-	select {
-	case c.connPool <- struct{}{}:
-	default:
-		return nil, nil, fmt.Errorf("max connections oppened: %d", maxConcurrentConnections)
-	}
-	defer func() {
-		<-c.connPool
-	}()
 
 	// Request building ...
 	requestURL := c.baseURL + verifyPath
